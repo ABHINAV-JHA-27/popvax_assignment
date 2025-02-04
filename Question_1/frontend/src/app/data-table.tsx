@@ -18,7 +18,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
@@ -49,9 +48,12 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data: data?.data || [],
+    manualPagination: true,
+    state: {
+      pagination: { pageIndex: page - 1, pageSize: 10 },
+    },
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -153,7 +155,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage((prev) => prev - 1)}
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
           >
             Previous
@@ -161,7 +163,9 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={() => {
+              if (data?.data?.length === 10) setPage((prev) => prev + 1);
+            }}
             disabled={data?.data?.length < 10}
           >
             Next

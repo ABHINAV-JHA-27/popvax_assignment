@@ -10,14 +10,15 @@ export const getAllStudies = async (
   let query = "?";
   query = query + `page=${page || 1}`;
   if (title && title != "") {
-    query = `&title=${title}`;
+    query += `&title=${title}`;
   }
   if (status && status != "") {
-    query = `&status=${status}`;
+    query += `&status=${status}`;
   }
   if (country && country != "") {
     query = query + `&country=${country}`;
   }
+
   const data = await GET(endPoints.fetchStudy + query);
   return data;
 };
