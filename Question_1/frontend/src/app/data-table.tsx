@@ -1,5 +1,6 @@
 "use client";
 
+import CommonSheet from "@/components/global/CommonSheet";
 import DropDown from "@/components/global/DropDown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ export function DataTable<TData, TValue>({
   const [status, setStatus] = useState("");
   const [country, setCountry] = useState("");
   const [title, setTitle] = useState("");
+  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
 
   const { data } = useQuery({
     queryKey: ["studies", page, status, country, title],
@@ -112,6 +114,9 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => {
+                    setSelectedRow(row.original);
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -124,7 +129,7 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow key="no-results">
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
@@ -172,6 +177,79 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
+      <StudyDetailsSheet
+        open={selectedRow}
+        close={() => setSelectedRow(null)}
+      />
     </div>
   );
 }
+
+const StudyDetailsSheet = ({
+  open,
+  close,
+}: {
+  open: any;
+  close: () => void;
+}) => {
+  return (
+    <CommonSheet open={!!open} close={close} title="Study Details">
+      <div className="w-full flex flex-col">
+        <div className="p-6 space-y-4">
+          <div className="space-y-2">
+            <p>
+              <strong>ID:</strong> {open?.id}
+            </p>
+            <p>
+              <strong>Title:</strong> {open?.title}
+            </p>
+            <p>
+              <strong>Disease:</strong> {open?.disease}
+            </p>
+            <p>
+              <strong>Start Date:</strong>{" "}
+              {open?.start_date
+                ? new Date(open?.start_date).toLocaleDateString()
+                : "N/A"}
+            </p>
+            <p>
+              <strong>End Date:</strong>{" "}
+              {open?.end_date
+                ? new Date(open?.end_date).toLocaleDateString()
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Status:</strong> {open?.status}
+            </p>
+            <p>
+              <strong>Phase:</strong> {open?.phase}
+            </p>
+            <p>
+              <strong>Country:</strong> {open?.country}
+            </p>
+            <p>
+              <strong>Sponsor:</strong> {open?.sponsor}
+            </p>
+            <p>
+              <strong>Enrollment:</strong> {open?.enrollment}
+            </p>
+            <p>
+              <strong>Eligibility:</strong> {open?.eligibility_criteria}
+            </p>
+            <p>
+              <strong>Did arrive at Result:</strong>
+              {open?.hasResults ?? "False"}
+            </p>
+            <a
+              href={open?.source_url}
+              target="_blank"
+              className="text-blue-500 underline"
+            >
+              More Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </CommonSheet>
+  );
+};
