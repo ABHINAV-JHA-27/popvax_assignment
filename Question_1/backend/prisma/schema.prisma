@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ClinicalTrial {
+  id                   String    @id @unique // ✅ Store the NCT ID directly
+  title                String
+  disease              String? // Disease or condition being studied
+  status               String // Overall trial status (Recruiting, Completed, etc.)
+  start_date           DateTime? // Start date (if available)
+  end_date             DateTime? // Expected completion date
+  country              String? // Main country where the trial is conducted
+  phase                String? // Clinical trial phase (Phase 1, Phase 2, etc.)
+  hasResults           Boolean // Indicates if study results are available
+  sponsor              String? // Sponsor or funding organization
+  intervention         String[] // Type of intervention (Drug, Vaccine, Therapy, etc.)
+  enrollment           Int? // Estimated number of participants
+  eligibility_criteria String? // Summary of patient eligibility requirements
+  study_results        String[] // Link to published results, if available
+  source_url           String? // Direct link to ClinicalTrials.gov study page
+  last_updated         DateTime  @default(now()) // Track last update
+  created_at           DateTime  @default(now()) // Track when added to DB
+  updated_at           DateTime  @updatedAt // Auto-updates on modification
+}
